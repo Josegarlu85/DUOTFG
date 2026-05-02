@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.PetEventPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="#0B1726">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="28">
+
+            <!-- TÍTULO -->
+            <Label Text="Nuevo evento de mascota"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   HorizontalOptions="Center" />
+
+            <!-- FORMULARIO -->
+            <Frame BackgroundColor="#112233"
+                   CornerRadius="20"
+                   Padding="24"
+                   BorderColor="#7FB3D5">
+
+                <VerticalStackLayout Spacing="22">
+
+                    <!-- Tipo de evento -->
+                    <VerticalStackLayout>
+                        <Label Text="Tipo de evento"
+                               TextColor="White"
+                               FontAttributes="Bold" />
+                        <Picker Title="Selecciona tipo"
+                                ItemsSource="{Binding EventTypes}"
+                                SelectedItem="{Binding SelectedEventType}"
+                                TextColor="White" />
+                    </VerticalStackLayout>
+
+                    <!-- Fecha -->
+                    <VerticalStackLayout>
+                        <Label Text="Fecha"
+                               TextColor="White"
+                               FontAttributes="Bold" />
+                        <DatePicker Date="{Binding Date}" />
+                    </VerticalStackLayout>
+
+                    <!-- Hora -->
+                    <VerticalStackLayout>
+                        <Label Text="Hora"
+                               TextColor="White"
+                               FontAttributes="Bold" />
+                        <TimePicker Time="{Binding Time}" />
+                    </VerticalStackLayout>
+
+                    <!-- Lugar -->
+                    <VerticalStackLayout>
+                        <Label Text="Lugar"
+                               TextColor="White"
+                               FontAttributes="Bold" />
+                        <Entry Placeholder="Ej: Parque Central"
+                               Text="{Binding Location}"
+                               PlaceholderColor="#8899AA"
+                               TextColor="White" />
+                    </VerticalStackLayout>
+
+                    <!-- Notas -->
+                    <VerticalStackLayout>
+                        <Label Text="Notas"
+                               TextColor="White"
+                               FontAttributes="Bold" />
+                        <Editor Placeholder="Ej: Llevar agua, paseo largo"
+                                Text="{Binding Notes}"
+                                PlaceholderColor="#8899AA"
+                                TextColor="White"
+                                AutoSize="TextChanges" />
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- BOTÓN GUARDAR -->
+            <Button Text="Guardar evento"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="#7FB3D5"
+                    TextColor="Black"
+                    CornerRadius="12"
+                    HeightRequest="50" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

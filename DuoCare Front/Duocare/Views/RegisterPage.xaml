@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.RegisterPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Duocare.ViewModels"
+    BackgroundColor="{StaticResource BackgroundPrimary}">
+
+    <ContentPage.BindingContext>
+        <vm:RegisterViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="18">
+
+            <Label Text="Crear cuenta"
+                   FontSize="32"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"
+                   HorizontalOptions="Center" />
+
+            <!-- ✅ FOTO (preview) -->
+            <Image Source="{Binding UserPhoto}"
+                   HeightRequest="110"
+                   WidthRequest="110"
+                   Aspect="AspectFill"
+                   HorizontalOptions="Center">
+                <Image.Clip>
+                    <EllipseGeometry Center="55,55" RadiusX="55" RadiusY="55"/>
+                </Image.Clip>
+            </Image>
+
+            <Button Text="Elegir foto de perfil"
+                    Command="{Binding PickPhotoCommand}"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    TextColor="{StaticResource TextPrimary}"
+                    CornerRadius="14"
+                    HeightRequest="50"/>
+
+            <!-- Nombre de usuario -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Entry Placeholder="Nombre de usuario"
+                       PlaceholderColor="{StaticResource TextSecondary}"
+                       TextColor="{StaticResource TextPrimary}"
+                       Text="{Binding UserName}" />
+            </Frame>
+
+            <!-- Email -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Entry Placeholder="Correo electrónico"
+                       PlaceholderColor="{StaticResource TextSecondary}"
+                       TextColor="{StaticResource TextPrimary}"
+                       Text="{Binding Email}" />
+            </Frame>
+
+            <!-- Password -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Entry Placeholder="Contraseña"
+                       PlaceholderColor="{StaticResource TextSecondary}"
+                       TextColor="{StaticResource TextPrimary}"
+                       IsPassword="True"
+                       Text="{Binding Password}" />
+            </Frame>
+
+            <!-- Confirm Password -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Entry Placeholder="Repetir contraseña"
+                       PlaceholderColor="{StaticResource TextSecondary}"
+                       TextColor="{StaticResource TextPrimary}"
+                       IsPassword="True"
+                       Text="{Binding ConfirmPassword}" />
+            </Frame>
+
+            <!-- Password validation -->
+            <HorizontalStackLayout Spacing="8"
+                                   HorizontalOptions="Start"
+                                   Margin="0,-10,0,10"
+                                   IsVisible="{Binding PasswordStatus, Converter={StaticResource StringNotEmptyConverter}}">
+
+                <Label Text="{Binding PasswordStatus, Converter={StaticResource PasswordIconConverter}}"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="{Binding PasswordStatus, Converter={StaticResource PasswordColorConverter}}" />
+
+                <Label Text="{Binding PasswordStatus}"
+                       FontSize="16"
+                       VerticalOptions="Center"
+                       TextColor="{Binding PasswordStatus, Converter={StaticResource PasswordColorConverter}}" />
+            </HorizontalStackLayout>
+
+            <!-- Register button -->
+            <Button Text="Registrarse"
+                    BackgroundColor="{StaticResource ButtonPrimary}"
+                    TextColor="White"
+                    CornerRadius="14"
+                    HeightRequest="50"
+                    Command="{Binding RegisterCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

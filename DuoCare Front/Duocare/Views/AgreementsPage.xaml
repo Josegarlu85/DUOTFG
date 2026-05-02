@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.AgreementsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Duocare.ViewModels"
+    BackgroundColor="#0B1726">
+
+    <ContentPage.BindingContext>
+        <vm:AgreementsViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="28">
+
+            <Label Text="Acuerdos"
+                   FontSize="32"
+                   FontAttributes="Bold"
+                   TextColor="White" />
+
+            <!-- VISOR PDF -->
+            <WebView Source="{Binding PdfSource}"
+                     HeightRequest="500" />
+
+            <Button Text="Descargar PDF"
+                    BackgroundColor="#7FB3D5"
+                    TextColor="Black"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    Command="{Binding DownloadPdfCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

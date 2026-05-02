@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.ProfileSetupPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Duocare.ViewModels"
+    BackgroundColor="{StaticResource BackgroundPrimary}">
+
+    <ContentPage.BindingContext>
+        <vm:ProfileSetupViewModel />
+    </ContentPage.BindingContext>
+
+    <VerticalStackLayout Padding="40" Spacing="35">
+
+        <!-- TÍTULO -->
+        <Label Text="Configurar perfil"
+               FontSize="30"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               TextColor="{StaticResource TextPrimary}" />
+
+        <Label Text="¿Para quién es Duocare?"
+               FontSize="22"
+               HorizontalOptions="Center"
+               TextColor="{StaticResource TextSecondary}" />
+
+        <!-- BOTONES -->
+        <VerticalStackLayout Spacing="20">
+
+            <Button Text="Mascota"
+                    Command="{Binding PetCommand}"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    TextColor="{StaticResource TextPrimary}"
+                    CornerRadius="20"
+                    HeightRequest="55"
+                    FontSize="18" />
+
+            <Button Text="Niño"
+                    Command="{Binding ChildCommand}"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    TextColor="{StaticResource TextPrimary}"
+                    CornerRadius="20"
+                    HeightRequest="55"
+                    FontSize="18" />
+
+            <Button Text="Ambos"
+                    Command="{Binding BothCommand}"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    TextColor="{StaticResource TextPrimary}"
+                    CornerRadius="20"
+                    HeightRequest="55"
+                    FontSize="18" />
+
+        </VerticalStackLayout>
+
+    </VerticalStackLayout>
+</ContentPage>

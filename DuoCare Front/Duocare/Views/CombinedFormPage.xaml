@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.CombinedFormPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Duocare.ViewModels"
+    BackgroundColor="{StaticResource BackgroundPrimary}">
+
+    <ContentPage.BindingContext>
+        <vm:CombinedFormViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="25" Spacing="30">
+
+            <!-- TÍTULO -->
+            <Label Text="Ficha Niño + Mascota"
+                   FontSize="30"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"
+                   HorizontalOptions="Center" />
+
+            <!-- ========================= -->
+            <!--      INFORMACIÓN NIÑO     -->
+            <!-- ========================= -->
+
+            <Label Text="Información del niño"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}" />
+
+            <!-- FORMULARIO DEL NIÑO -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="18"
+                   Padding="18"
+                   HasShadow="True">
+
+                <VerticalStackLayout Spacing="16">
+
+                    <Entry Placeholder="Nombre del niño"
+                           Text="{Binding ChildName}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}" />
+
+                    <Frame BackgroundColor="{StaticResource CardSecondary}"
+                           CornerRadius="14"
+                           Padding="12">
+                        <Picker Title="Edad"
+                                ItemsSource="{Binding AgeList}"
+                                SelectedItem="{Binding ChildAge}"
+                                TextColor="{StaticResource TextPrimary}"
+                                TitleColor="{StaticResource TextSecondary}" />
+                    </Frame>
+
+                    <Entry Placeholder="Alergias"
+                           Text="{Binding ChildAllergies}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}" />
+
+                    <Entry Placeholder="Condiciones médicas"
+                           Text="{Binding ChildConditions}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}" />
+
+                    <Entry Placeholder="Medicación"
+                           Text="{Binding ChildMedication}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}" />
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- ========================= -->
+            <!--    INFORMACIÓN MASCOTA    -->
+            <!-- ========================= -->
+
+            <Label Text="Información de la mascota"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}" />
+
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="18"
+                   Padding="18"
+                   HasShadow="True">
+
+                <VerticalStackLayout Spacing="16">
+
+                    <Entry Placeholder="Nombre de la mascota"
+                           Text="{Binding PetName}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}" />
+
+                    <Frame BackgroundColor="{StaticResource CardSecondary}"
+                           CornerRadius="14"
+                           Padding="12">
+                        <Picker Title="Especie"
+                                ItemsSource="{Binding SpeciesList}"
+                                SelectedItem="{Binding Species}"
+                                TextColor="{StaticResource TextPrimary}"
+                                TitleColor="{StaticResource TextSecondary}" />
+                    </Frame>
+
+                    <Frame BackgroundColor="{StaticResource CardSecondary}"
+                           CornerRadius="14"
+                           Padding="12">
+                        <Picker Title="Raza"
+                                ItemsSource="{Binding BreedList}"
+                                SelectedItem="{Binding Breed}"
+                                TextColor="{StaticResource TextPrimary}"
+                                TitleColor="{StaticResource TextSecondary}" />
+                    </Frame>
+
+                    <Entry Placeholder="Edad"
+                           Text="{Binding PetAge}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}" />
+
+                    <Entry Placeholder="Alergias"
+                           Text="{Binding PetAllergies}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}" />
+
+                    <Entry Placeholder="Medicación"
+                           Text="{Binding PetMedication}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}" />
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- BOTÓN GUARDAR -->
+            <Button Text="Guardar"
+                    BackgroundColor="{StaticResource ButtonPrimary}"
+                    TextColor="White"
+                    CornerRadius="14"
+                    HeightRequest="50"
+                    Command="{Binding SaveCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

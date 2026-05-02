@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.ChangePhotoPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Duocare.ViewModels"
+    BackgroundColor="{StaticResource BackgroundPrimary}"
+    Shell.NavBarIsVisible="True">
+
+    <Shell.BackButtonBehavior IsEnabled="True" />
+
+    <ContentPage.BindingContext>
+        <vm:ChangePhotoViewModel />
+    </ContentPage.BindingContext>
+
+    <VerticalStackLayout Padding="24" Spacing="24">
+
+        <Label Text="Cambiar foto de perfil"
+               FontSize="28"
+               FontAttributes="Bold"
+               TextColor="{StaticResource TextPrimary}" />
+
+        <Frame CornerRadius="20"
+               Padding="20"
+               BackgroundColor="{StaticResource CardBackground}"
+               HasShadow="True">
+
+            <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+
+                <Grid WidthRequest="220"
+                      HeightRequest="220">
+
+                    <Grid.Clip>
+                        <EllipseGeometry Center="110,110" RadiusX="110" RadiusY="110" />
+                    </Grid.Clip>
+
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#6A85FF" Offset="0.0" />
+                            <GradientStop Color="#8F6BFF" Offset="0.5" />
+                            <GradientStop Color="#C56DFF" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Grid.Background>
+
+                    <!-- FOTO REAL (solo aparece si hay PreviewImage) -->
+                    <Image x:Name="ProfileImage"
+                           Source="{Binding PreviewImage}"
+                           Aspect="AspectFill"
+                           IsVisible="{Binding HasPreview}" />
+
+                </Grid>
+
+                <Button Text="Elegir de galería"
+                        Command="{Binding PickFromGalleryCommand}"
+                        BackgroundColor="{StaticResource ButtonSecondary}"
+                        TextColor="{StaticResource TextPrimary}"
+                        CornerRadius="12" />
+
+                <Button Text="Tomar foto"
+                        Command="{Binding TakePhotoCommand}"
+                        BackgroundColor="{StaticResource ButtonSecondary}"
+                        TextColor="{StaticResource TextPrimary}"
+                        CornerRadius="12" />
+
+                <Button Text="Guardar"
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="{StaticResource ButtonPrimary}"
+                        TextColor="White"
+                        CornerRadius="12" />
+
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="Red"
+                       FontSize="14"
+                       HorizontalOptions="Center"
+                       IsVisible="{Binding HasError}" />
+
+            </VerticalStackLayout>
+
+        </Frame>
+
+    </VerticalStackLayout>
+
+</ContentPage>

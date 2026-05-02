@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.ChangeEmailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Duocare.ViewModels"
+    BackgroundColor="{StaticResource BackgroundPrimary}"
+    Shell.NavBarIsVisible="True">
+
+    <!-- ⭐ Habilitar flecha atrás -->
+    <Shell.BackButtonBehavior IsEnabled="True" />
+
+    <ContentPage.BindingContext>
+        <vm:ChangeEmailViewModel />
+    </ContentPage.BindingContext>
+
+    <VerticalStackLayout Padding="24" Spacing="24">
+
+        <Label Text="Cambiar correo"
+               FontSize="28"
+               FontAttributes="Bold"
+               TextColor="{StaticResource TextPrimary}" />
+
+        <Frame CornerRadius="20"
+               Padding="20"
+               BackgroundColor="{StaticResource CardBackground}"
+               HasShadow="True">
+
+            <VerticalStackLayout Spacing="16">
+
+                <Entry Placeholder="Correo actual"
+                       Keyboard="Email"
+                       Text="{Binding CurrentEmail}" />
+
+                <Entry Placeholder="Nuevo correo"
+                       Keyboard="Email"
+                       Text="{Binding NewEmail}" />
+
+                <Entry Placeholder="Confirmar nuevo correo"
+                       Keyboard="Email"
+                       Text="{Binding ConfirmEmail}" />
+
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="Red"
+                       FontSize="14"
+                       IsVisible="{Binding HasError}" />
+
+                <Button Text="Guardar cambios"
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="{StaticResource ButtonPrimary}"
+                        TextColor="White"
+                        CornerRadius="12" />
+
+            </VerticalStackLayout>
+
+        </Frame>
+
+    </VerticalStackLayout>
+
+</ContentPage>

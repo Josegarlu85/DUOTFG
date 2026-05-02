@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.PetFormPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Duocare.ViewModels"
+    BackgroundColor="{StaticResource BackgroundPrimary}">
+
+    <ContentPage.BindingContext>
+        <vm:PetFormViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20">
+
+            <!-- TÍTULO SIN BOTONES -->
+            <Label Text="Ficha de Mascota"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"
+                   Padding="0,0,0,10" />
+
+            <!-- NOMBRE -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Entry Placeholder="Nombre de la mascota"
+                       PlaceholderColor="{StaticResource TextSecondary}"
+                       TextColor="{StaticResource TextPrimary}"
+                       Text="{Binding PetName}" />
+            </Frame>
+
+            <!-- ESPECIE -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Picker Title="Tipo de mascota"
+                        TitleColor="{StaticResource TextSecondary}"
+                        TextColor="{StaticResource TextPrimary}"
+                        ItemsSource="{Binding SpeciesList}"
+                        SelectedItem="{Binding Species}" />
+            </Frame>
+
+            <!-- RAZA -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Picker Title="Raza"
+                        TitleColor="{StaticResource TextSecondary}"
+                        TextColor="{StaticResource TextPrimary}"
+                        ItemsSource="{Binding Breeds}"
+                        SelectedItem="{Binding Breed}" />
+            </Frame>
+
+            <!-- EDAD -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Entry Placeholder="Edad"
+                       PlaceholderColor="{StaticResource TextSecondary}"
+                       TextColor="{StaticResource TextPrimary}"
+                       Text="{Binding Age}" />
+            </Frame>
+
+            <!-- ALERGIAS -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Editor Placeholder="Alergias"
+                        PlaceholderColor="{StaticResource TextSecondary}"
+                        TextColor="{StaticResource TextPrimary}"
+                        AutoSize="TextChanges"
+                        Text="{Binding Allergies}" />
+            </Frame>
+
+            <!-- MEDICACIÓN -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="14"
+                   Padding="12">
+                <Editor Placeholder="Medicación"
+                        PlaceholderColor="{StaticResource TextSecondary}"
+                        TextColor="{StaticResource TextPrimary}"
+                        AutoSize="TextChanges"
+                        Text="{Binding Medication}" />
+            </Frame>
+
+            <!-- BOTÓN GUARDAR -->
+            <Button Text="Guardar"
+                    BackgroundColor="{StaticResource ButtonPrimary}"
+                    TextColor="White"
+                    CornerRadius="14"
+                    HeightRequest="50"
+                    Command="{Binding SaveCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.AboutPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="#060B17">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="36">
+
+            <!-- TÍTULO PRINCIPAL -->
+            <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                <Label Text="Acerca de Duocare"
+                       FontSize="34"
+                       FontAttributes="Bold"
+                       TextColor="#F8FAFC"
+                       HorizontalTextAlignment="Center" />
+
+                <BoxView HeightRequest="3"
+                         WidthRequest="160"
+                         CornerRadius="2"
+                         BackgroundColor="#6366F1"
+                         HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <!-- TARJETA DE INFORMACIÓN PRINCIPAL -->
+            <Frame CornerRadius="22"
+                   Padding="28"
+                   BackgroundColor="#0F172A"
+                   HasShadow="False">
+
+                <VerticalStackLayout Spacing="22">
+
+                    <Label Text="Duocare es una plataforma diseñada para centralizar y simplificar la gestión de información familiar, permitiendo administrar de forma unificada datos de niños, mascotas y acuerdos compartidos."
+                           TextColor="#CBD5E1"
+                           FontSize="17"
+                           LineHeight="1.55"
+                           HorizontalTextAlignment="Center" />
+
+                    <Label Text="La aplicación está construida sobre .NET MAUI y sigue el patrón MVVM, garantizando una arquitectura limpia, escalable y fácil de mantener. Cada módulo ha sido diseñado con un enfoque en claridad visual, consistencia y eficiencia."
+                           TextColor="#A5B4FC"
+                           FontSize="17"
+                           LineHeight="1.55"
+                           HorizontalTextAlignment="Center" />
+
+                    <Label Text="Duocare emplea almacenamiento local seguro para proteger la información sensible del usuario, manteniendo una experiencia fluida y confiable en múltiples dispositivos."
+                           TextColor="#CBD5E1"
+                           FontSize="17"
+                           LineHeight="1.55"
+                           HorizontalTextAlignment="Center" />
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- TARJETA DE VERSIÓN -->
+            <Frame CornerRadius="18"
+                   Padding="24"
+                   BackgroundColor="#0F172A"
+                   HasShadow="False">
+
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+
+                    <Label Text="Versión 1.0.0"
+                           TextColor="#94A3B8"
+                           FontSize="15"
+                           FontAttributes="Bold" />
+
+                    <Label Text="Aplicación creada con dedicación, precisión técnica y una visión centrada en la experiencia del usuario."
+                           TextColor="#E2E8F0"
+                           FontSize="15"
+                           LineHeight="1.45"
+                           HorizontalTextAlignment="Center" />
+
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

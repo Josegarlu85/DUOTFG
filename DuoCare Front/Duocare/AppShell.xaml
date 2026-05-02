@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Duocare.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Duocare.Views"
+    xmlns:vm="clr-namespace:Duocare.ViewModels"
+    Shell.FlyoutBackgroundColor="#0B1726"
+    Shell.ForegroundColor="White"
+    Shell.NavBarHasShadow="False"
+    FlyoutBehavior="Flyout">
+
+    <!-- BindingContext -->
+    <Shell.BindingContext>
+        <vm:AppShellViewModel />
+    </Shell.BindingContext>
+
+    <!-- ⭐ CABECERA CON FOTO + NOMBRE (CÍRCULO 140px) -->
+    <Shell.FlyoutHeader>
+        <VerticalStackLayout Padding="20,40,20,20"
+                             Spacing="10"
+                             HorizontalOptions="Center">
+
+            <Grid WidthRequest="140"
+                  HeightRequest="140"
+                  HorizontalOptions="Center">
+
+                <Grid.Clip>
+                    <EllipseGeometry Center="70,70" RadiusX="70" RadiusY="70" />
+                </Grid.Clip>
+
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#6A85FF" Offset="0.0" />
+                        <GradientStop Color="#8F6BFF" Offset="0.5" />
+                        <GradientStop Color="#C56DFF" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Grid.Background>
+
+                <Image x:Name="SidebarProfileImage"
+                       Source="{Binding UserPhoto}"
+                       Aspect="AspectFill" />
+
+                <Label x:Name="SidebarNoPhotoLabel"
+                       Text="Sin foto"
+                       TextColor="White"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       IsVisible="False" />
+
+                <Grid.Triggers>
+                    <DataTrigger TargetType="Grid"
+                                 Binding="{Binding UserPhoto}"
+                                 Value="">
+                        <Setter TargetName="SidebarProfileImage" Property="IsVisible" Value="False" />
+                        <Setter TargetName="SidebarNoPhotoLabel" Property="IsVisible" Value="True" />
+                    </DataTrigger>
+
+                    <DataTrigger TargetType="Grid"
+                                 Binding="{Binding UserPhoto}"
+                                 Value="{x:Null}">
+                        <Setter TargetName="SidebarProfileImage" Property="IsVisible" Value="False" />
+                        <Setter TargetName="SidebarNoPhotoLabel" Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </Grid.Triggers>
+
+            </Grid>
+
+            <Label Text="{Binding UserName}"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </Shell.FlyoutHeader>
+
+    <!-- MENÚ -->
+    <FlyoutItem Title="🏠 Dashboard">
+        <ShellContent Route="DashboardPage"
+                      ContentTemplate="{DataTemplate views:DashboardPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="📅 Calendario">
+        <ShellContent Route="CalendarPage"
+                      ContentTemplate="{DataTemplate views:CalendarPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="📍 Citas">
+        <ShellContent Route="CitasPage"
+                      ContentTemplate="{DataTemplate views:CitasPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="📄 Acuerdos">
+        <ShellContent Route="AgreementsPage"
+                      ContentTemplate="{DataTemplate views:AgreementsPage}" />
+    </FlyoutItem>
+
+    <!-- ⭐⭐ PÁGINAS OCULTAS ⭐⭐ -->
+    <ShellContent Route="PetFormPage"
+                  ContentTemplate="{DataTemplate views:PetFormPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Route="ChildFormPage"
+                  ContentTemplate="{DataTemplate views:ChildFormPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Route="CombinedFormPage"
+                  ContentTemplate="{DataTemplate views:CombinedFormPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Route="ProfileSetupPage"
+                  ContentTemplate="{DataTemplate views:ProfileSetupPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <!-- ⭐⭐ AJUSTES ⭐⭐ -->
+    <ShellContent Route="SettingsPage"
+                  ContentTemplate="{DataTemplate views:SettingsPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Route="ChangePasswordPage"
+                  ContentTemplate="{DataTemplate views:ChangePasswordPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Route="ChangeEmailPage"
+                  ContentTemplate="{DataTemplate views:ChangeEmailPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Route="ChangeNamePage"
+                  ContentTemplate="{DataTemplate views:ChangeNamePage}"
+                  FlyoutItemIsVisible="False" />
+
+    <ShellContent Route="ChangePhotoPage"
+                  ContentTemplate="{DataTemplate views:ChangePhotoPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <!-- ⭐⭐⭐ AÑADIR SOLO ESTO (NECESARIO PARA QUE ABOUTPAGE SEA RAÍZ) ⭐⭐⭐ -->
+    <ShellContent Route="AboutPage"
+                  ContentTemplate="{DataTemplate views:AboutPage}"
+                  FlyoutItemIsVisible="False" />
+    <!-- ⭐⭐⭐ FIN DE LO ÚNICO NECESARIO ⭐⭐⭐ -->
+
+    <!-- ⭐⭐⭐ DummyPage (no se toca) ⭐⭐⭐ -->
+    <ShellContent Route="DummyPage"
+                  ContentTemplate="{DataTemplate views:DashboardPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <!-- FOOTER -->
+    <Shell.FlyoutFooter>
+        <VerticalStackLayout Padding="20" Spacing="18">
+
+            <HorizontalStackLayout>
+                <Label Text="ℹ️" FontSize="18" />
+                <Label Text="Acerca de la aplicación"
+                       TextColor="White"
+                       FontSize="16"
+                       Margin="10,0,0,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToAboutCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout>
+                <Label Text="⚙️" FontSize="18" />
+                <Label Text="Ajustes"
+                       TextColor="White"
+                       FontSize="16"
+                       Margin="10,0,0,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToSettingsCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout>
+                <Label Text="🚪" FontSize="18" />
+                <Label Text="Cerrar sesión"
+                       TextColor="#EF4444"
+                       FontSize="16"
+                       Margin="10,0,0,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding LogoutCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </Shell.FlyoutFooter>
+
+</Shell>

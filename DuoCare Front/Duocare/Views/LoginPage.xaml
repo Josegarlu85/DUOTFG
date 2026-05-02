@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:Duocare.ViewModels"
+    BackgroundColor="{StaticResource BackgroundPrimary}">
+
+    <ContentPage.BindingContext>
+        <viewModels:LoginViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="28">
+
+            <Label Text="Duocare"
+                   FontSize="34"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="{StaticResource TextPrimary}" />
+
+            <Label Text="Bienvenido de nuevo"
+                   FontSize="18"
+                   HorizontalOptions="Center"
+                   TextColor="{StaticResource TextSecondary}" />
+
+            <!-- EMAIL -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="12"
+                   Padding="0">
+
+                <Entry Placeholder="Correo electrónico"
+                       Text="{Binding Email}"
+                       PlaceholderColor="{StaticResource TextSecondary}"
+                       TextColor="{StaticResource TextPrimary}"
+                       BackgroundColor="Transparent"
+                       Margin="10,6" />
+            </Frame>
+
+            <!-- CONTRASEÑA -->
+            <Frame BackgroundColor="{StaticResource CardBackground}"
+                   CornerRadius="12"
+                   Padding="0">
+
+                <Entry Placeholder="Contraseña"
+                       IsPassword="True"
+                       Text="{Binding Password}"
+                       PlaceholderColor="{StaticResource TextSecondary}"
+                       TextColor="{StaticResource TextPrimary}"
+                       BackgroundColor="Transparent"
+                       Margin="10,6" />
+            </Frame>
+
+            <!-- BOTÓN LOGIN -->
+            <Button Text="Iniciar sesión"
+                    Command="{Binding LoginCommand}"
+                    BackgroundColor="{StaticResource ButtonPrimary}"
+                    TextColor="White"
+                    CornerRadius="12"
+                    HeightRequest="50" />
+
+            <!-- ENLACES -->
+            <Label Text="¿Has olvidado tu contraseña?"
+                   HorizontalOptions="Center"
+                   TextColor="{StaticResource TextSecondary}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Label Text="¿No tienes cuenta? Regístrate"
+                   HorizontalOptions="Center"
+                   TextColor="{StaticResource ButtonPrimary}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding RegisterCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

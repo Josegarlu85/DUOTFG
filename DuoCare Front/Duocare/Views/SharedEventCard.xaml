@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Frame xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       x:Class="Duocare.Views.SharedEventCard"
+       CornerRadius="18"
+       Padding="20"
+       HasShadow="True"
+       BackgroundColor="White">
+
+    <VerticalStackLayout Spacing="6">
+
+        <Label Text="Próximo evento compartido"
+               FontSize="16"
+               FontAttributes="Bold"
+               TextColor="#1A1A1A"/>
+
+        <Label Text="Recogida del niño — Viernes por la tarde"
+               FontSize="14"
+               TextColor="#333"/>
+
+        <Label Text="Viernes, 18:00 · Semanas alternas"
+               FontSize="13"
+               TextColor="#555"/>
+
+        <Label Text="Entrada principal del colegio"
+               FontSize="13"
+               TextColor="#777"/>
+
+        <Button Text="Ver detalles"
+                Margin="0,10,0,0"
+                BackgroundColor="#007AFF"
+                TextColor="White"
+                CornerRadius="12"
+                Clicked="OnDetailsClicked"/>
+    </VerticalStackLayout>
+
+</Frame>

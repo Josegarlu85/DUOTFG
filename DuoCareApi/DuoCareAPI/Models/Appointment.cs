@@ -1,0 +1,35 @@
+﻿using DuoCareAPI.Models.Enums;
+
+namespace DuoCareAPI.Models
+{
+    public class Appointment
+    {
+        public int Id { get; set; }
+
+        public DateTime Date { get; set; }
+
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.Pendiente;
+
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+
+        public string SenderId { get; set; }
+        public User Sender { get; set; }
+
+        public string ReceiverId { get; set; }
+        public User Receiver { get; set; }
+
+        public string? RejectedByUserId { get; set; }
+        public DateTime? RejectedAt { get; set; }
+
+        public string? AbsentUserId { get; set; }
+        public DateTime? AutoCancelledAt { get; set; }
+
+        public double? AbsentUserLatitude { get; set; }
+        public double? AbsentUserLongitude { get; set; }
+        public double? AbsentUserDistance { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string CreatedBy { get; set; }
+    }
+}

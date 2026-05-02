@@ -1,0 +1,30 @@
+<ContentPage
+    x:Class="Duocare.Views.CalendarEventPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="#050B12">
+
+    <VerticalStackLayout Padding="24" Spacing="20">
+        <Label Text="Nuevo evento del calendario"
+               FontSize="26"
+               FontAttributes="Bold"
+               TextColor="White" />
+
+        <Entry Placeholder="Título del evento"
+               TextColor="White"
+               PlaceholderColor="#7A869A" />
+
+        <Entry Placeholder="Lugar"
+               TextColor="White"
+               PlaceholderColor="#7A869A" />
+
+        <DatePicker TextColor="White"
+                    BackgroundColor="Transparent" />
+
+        <Button Text="Guardar"
+                BackgroundColor="#7FB3D5"
+                TextColor="Black"
+                CornerRadius="12" />
+    </VerticalStackLayout>
+
+</ContentPage>

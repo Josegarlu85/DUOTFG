@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Duocare.Views.EventDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="#0B1726">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="32">
+
+            <!-- BLOQUE NIÑO -->
+            <VerticalStackLayout IsVisible="{Binding IsChildEvent}" Spacing="20">
+
+                <Label Text="{Binding EventTitle}"
+                       FontSize="32"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalOptions="Center" />
+
+                <Label Text="Recogida / Entrega del niño"
+                       FontSize="20"
+                       TextColor="#7FB3D5"
+                       HorizontalOptions="Center" />
+
+                <Frame BackgroundColor="#112233"
+                       CornerRadius="20"
+                       Padding="24"
+                       BorderColor="#7FB3D5">
+
+                    <VerticalStackLayout Spacing="28">
+
+                        <Label Text="Horario"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="White" />
+
+                        <Label Text="{Binding EventDate}"
+                               FontSize="16"
+                               TextColor="#D0D0D0" />
+
+                        <Label Text="Lugar"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               Margin="0,20,0,0" />
+
+                        <Label Text="{Binding EventLocation}"
+                               FontSize="16"
+                               TextColor="#D0D0D0" />
+
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+
+            <!-- BLOQUE MASCOTA -->
+            <VerticalStackLayout IsVisible="{Binding IsPetEvent}" Spacing="20">
+
+                <Label Text="{Binding EventTitle}"
+                       FontSize="32"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalOptions="Center" />
+
+                <Label Text="Paseo y cuidados de la mascota"
+                       FontSize="20"
+                       TextColor="#7FB3D5"
+                       HorizontalOptions="Center" />
+
+                <Frame BackgroundColor="#112233"
+                       CornerRadius="20"
+                       Padding="24"
+                       BorderColor="#7FB3D5">
+
+                    <VerticalStackLayout Spacing="28">
+
+                        <Label Text="Horario"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="White" />
+
+                        <Label Text="{Binding EventDate}"
+                               FontSize="16"
+                               TextColor="#D0D0D0" />
+
+                        <Label Text="Lugar"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               Margin="0,20,0,0" />
+
+                        <Label Text="{Binding EventLocation}"
+                               FontSize="16"
+                               TextColor="#D0D0D0" />
+
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
