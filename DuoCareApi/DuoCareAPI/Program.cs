@@ -106,6 +106,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 var app = builder.Build();
 
+app.UseRouting();
+
 app.UseCors("AllowSpecificOrigins");
 app.UseRateLimiter();
 

@@ -19,17 +19,19 @@ public partial class ProfileSetupViewModel : ObservableObject
 
     private async void OnPetSelected()
     {
-        // ❌ NO marcar ProfileCompleted aquí
+        Preferences.Set("FichaSeleccionada", "Mascota");
         await Shell.Current.GoToAsync("PetFormPage");
     }
 
     private async void OnChildSelected()
     {
+        Preferences.Set("FichaSeleccionada", "Niño");
         await Shell.Current.GoToAsync("ChildFormPage");
     }
 
     private async void OnBothSelected()
     {
+        Preferences.Set("FichaSeleccionada", "Ambos");
         await Shell.Current.GoToAsync("CombinedFormPage");
     }
 }

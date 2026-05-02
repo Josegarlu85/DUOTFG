@@ -4,12 +4,14 @@ using DuoCareAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Asp.Versioning;
 
 namespace DuoCareAPI.Controllers
 {
+    [ApiVersion("1.0")]
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // ✅ aplica a todos los endpoints
+    [Authorize] 
     public class RecordsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -21,8 +23,7 @@ namespace DuoCareAPI.Controllers
             _logger = logger;
         }
 
-        // ✅ POST api/records
-        // Crea un registro médico del usuario (niño o mascota)
+        // Crea un registro médico del usuario (niño o mascota o ambos, todos un poco animales)
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] RecordDto dto)
         {
@@ -42,29 +43,24 @@ namespace DuoCareAPI.Controllers
                     Medication = dto.Medication,
                     MedicalData = dto.MedicalData,
                     Notes = dto.Notes,
-                    ExtraDataJson = dto.ExtraDataJson ?? "",
+                    ExtraDataJson = dto.ExtraDataJson ?? "[]",
                     UserId = userId
                 };
 
                 _context.Records.Add(record);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Registro médico creado: {RecordId} para usuario {UserId}", record.Id, userId);
-                return Ok(record);
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex, "Error de base de datos al crear registro para usuario {UserId}", userId);
-                return StatusCode(500, "Error al crear el registro. Intenta más tarde.");
+                _logger.LogInformation("Registro médico creado para usuario {UserId}", userId);
+                
+                return Ok(record); // Éxito
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al crear registro para usuario {UserId}", userId);
-                return StatusCode(500, "Error inesperado. Intenta más tarde.");
+                _logger.LogError(ex, "Error al crear registro");
+                return StatusCode(500, "Error interno"); // Fallo (este return arregla el CS0161)
             }
         }
 
-        // ✅ GET api/records/me
         // Devuelve el primer registro del usuario autenticado (si solo manejas 1)
         [HttpGet("me")]
         public async Task<IActionResult> GetMine()
@@ -81,7 +77,6 @@ namespace DuoCareAPI.Controllers
             return Ok(record);
         }
 
-        // ✅ GET api/records/me/all
         // Devuelve lista de registros del usuario autenticado
         [HttpGet("me/all")]
         public async Task<IActionResult> GetMineAll()
@@ -98,7 +93,6 @@ namespace DuoCareAPI.Controllers
             return Ok(records);
         }
 
-        // ✅ Mantengo tu endpoint existente (admin o dueño)
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUser(string id)
         {

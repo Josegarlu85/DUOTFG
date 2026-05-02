@@ -19,6 +19,7 @@ public partial class AppShell : Shell
         // RUTAS PRINCIPALES
         // =========================
         Routing.RegisterRoute("LoginPage", typeof(LoginPage));
+        Routing.RegisterRoute("RegisterPage", typeof(RegisterPage));
         Routing.RegisterRoute(nameof(ProfileSetupPage), typeof(ProfileSetupPage));
         Routing.RegisterRoute("DashboardPage", typeof(DashboardPage));
 
@@ -78,27 +79,27 @@ public partial class AppShell : Shell
     // =========================
     private async Task RedirectAsync()
     {
-        // ✅ 1. Comprobar JWT (fuente de verdad)
+        //  1. Comprobar JWT (fuente de verdad)
         var token = Preferences.Get("AuthToken", string.Empty);
 
         if (string.IsNullOrWhiteSpace(token))
         {
-            // 🚫 No autenticado → Login
+            //  No autenticado → Login
             await GoToAsync("//LoginPage");
             return;
         }
 
-        // ✅ 2. Usuario autenticado → comprobar perfil
+        //  2. Usuario autenticado → comprobar perfil
         var profileCompleted = Preferences.Get("ProfileCompleted", false);
 
         if (!profileCompleted)
         {
-            // 🧩 Perfil pendiente → ProfileSetup
+            // Perfil pendiente → ProfileSetup
             await GoToAsync("ProfileSetupPage");
         }
         else
         {
-            // ✅ Todo OK → Dashboard
+            //  Todo OK → Dashboard
             await GoToAsync("//DashboardPage");
         }
     }

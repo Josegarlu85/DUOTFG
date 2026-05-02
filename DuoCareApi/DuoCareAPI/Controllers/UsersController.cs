@@ -3,9 +3,11 @@ using DuoCareAPI.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Asp.Versioning;
 
 namespace DuoCareAPI.Controllers
 {
+    [ApiVersion("1.0")]
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -20,7 +22,7 @@ namespace DuoCareAPI.Controllers
             _logger = logger;
         }
 
-        // Busca un usuario por su email y devuelve sus datos básicos
+        // Busca un usuario por su email y devuelve sus datos bï¿½sicos
         [HttpGet("find")]
         public async Task<ActionResult<UserListDto>> FindByEmail([FromQuery] string email)
         {
@@ -28,14 +30,14 @@ namespace DuoCareAPI.Controllers
 
             if (string.IsNullOrWhiteSpace(email))
             {
-                _logger.LogWarning("Búsqueda de usuario con email vacío por usuario {UserId}", requesterId);
+                _logger.LogWarning("Bï¿½squeda de usuario con email vacï¿½o por usuario {UserId}", requesterId);
                 return BadRequest("El email es requerido");
             }
 
             if (!email.Contains("@"))
             {
-                _logger.LogWarning("Formato de email inválido por usuario {UserId}", requesterId);
-                return BadRequest("El formato del email es inválido");
+                _logger.LogWarning("Formato de email invï¿½lido por usuario {UserId}", requesterId);
+                return BadRequest("El formato del email es invï¿½lido");
             }
 
             email = email.Trim().ToLower();
@@ -45,7 +47,7 @@ namespace DuoCareAPI.Controllers
 
             if (user == null || user.Id == requesterId)
             {
-                _logger.LogWarning("Usuario no encontrado o intento de buscarse a sí mismo por usuario {UserId}", requesterId);
+                _logger.LogWarning("Usuario no encontrado o intento de buscarse a sï¿½ mismo por usuario {UserId}", requesterId);
                 return NotFound("Usuario no encontrado");
             }
 

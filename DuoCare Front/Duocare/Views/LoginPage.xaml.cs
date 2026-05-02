@@ -28,16 +28,4 @@ public partial class LoginPage : ContentPage
             ? AppTheme.Dark
             : AppTheme.Light;
     }
-
-    // ⭐⭐ ESTE ES EL MÉTODO QUE TE FALTABA ⭐⭐
-    private async void OnLoginClicked(object sender, EventArgs e)
-    {
-        // Aquí normalmente validarías usuario/contraseña
-
-        // ⭐ Activar el Shell
-        Application.Current.MainPage = new AppShell();
-
-        // ⭐ Ir al Dashboard dentro del Shell
-        await Shell.Current.GoToAsync("//DashboardPage");
-    }
 }

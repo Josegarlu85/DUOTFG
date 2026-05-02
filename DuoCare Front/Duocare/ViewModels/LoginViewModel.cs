@@ -29,7 +29,6 @@ public partial class LoginViewModel : ObservableObject
 
     private async void OnLogin()
     {
-        // Validación rápida
         if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
         {
             await Application.Current.MainPage.DisplayAlert("Error", "Introduce email y contraseña", "OK");
@@ -38,15 +37,11 @@ public partial class LoginViewModel : ObservableObject
 
         try
         {
-            // ✅ Login real contra el backend (devuelve token, userId, email, expires)
-            // ✅ ApiServices.LoginAsync ya guarda AuthToken/CurrentUserId/CurrentUserEmail
-            // ✅ y aplica Authorization: Bearer automáticamente
+            // ✅ Login real contra el backend
             var result = await _api.LoginAsync(new LoginRequest(Email.Trim(), Password));
 
-            // ✅ Nombre visible en el menú (por ahora usamos el email)
             Preferences.Set("UserName", result.Email);
 
-            // ✅ Foto por usuario (si existe)
             var emailKey = result.Email.Trim().ToLowerInvariant();
             var photoPath = Preferences.Get($"UserPhoto_{emailKey}", "");
             if (!string.IsNullOrWhiteSpace(photoPath))
@@ -54,15 +49,10 @@ public partial class LoginViewModel : ObservableObject
             else
                 Preferences.Remove("CurrentUserPhotoPath");
 
-            // ✅ Crear Shell como raíz
+            // ✅ CARGAMOS EL SHELL
+            // Al hacer esto, el constructor de AppShell se ejecuta, 
+            // corre tu RedirectAsync() y decide si mandarlo al Setup o al Dashboard.
             Application.Current.MainPage = new AppShell();
-
-            // ✅ Navegar cuando el Shell ya esté listo
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-            {
-                if (Shell.Current != null)
-                    await Shell.Current.GoToAsync("//DashboardPage");
-            });
         }
         catch (Exception ex)
         {
@@ -72,31 +62,22 @@ public partial class LoginViewModel : ObservableObject
 
     private async void OnRegister()
     {
-        // ✅ Si hay Shell, navega por rutas
         if (Shell.Current != null)
         {
             await Shell.Current.GoToAsync("RegisterPage");
             return;
         }
-
-        // ✅ Si NO hay Shell, usa Navigation normal
         await Application.Current.MainPage.Navigation.PushAsync(new RegisterPage());
     }
 
     private async void OnForgotPassword()
     {
-        // ✅ Si tienes una ruta en AppShell (por ejemplo "ForgotPasswordPage"), navega a ella
         if (Shell.Current != null)
         {
-            // Cambia "ForgotPasswordPage" por la ruta real si la has registrado con Routing.RegisterRoute(...)
             await Shell.Current.GoToAsync("ForgotPasswordPage");
             return;
         }
 
-        // ✅ Fallback si aún no tienes ruta/página
-        await Application.Current.MainPage.DisplayAlert(
-            "Info",
-            "Crea y registra la ruta/página ForgotPasswordPage para navegar aquí.",
-            "OK");
+        await Application.Current.MainPage.DisplayAlert("Info", "Página de recuperación no registrada.", "OK");
     }
 }

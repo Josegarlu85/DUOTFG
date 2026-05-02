@@ -177,8 +177,13 @@ public class ApiServices
         EnsureBearerFromPreferences();
 
         var response = await _httpClient.PostAsJsonAsync("api/records", dto);
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            // ESTO REVELARÁ EL NÚMERO DEL ERROR
+            throw new Exception($"HTTP {(int)response.StatusCode} - {response.ReasonPhrase}. {body}");
+        }
 
         return await response.Content.ReadFromJsonAsync<RecordResponse>()
                ?? throw new Exception("Respuesta vacía al crear registro.");

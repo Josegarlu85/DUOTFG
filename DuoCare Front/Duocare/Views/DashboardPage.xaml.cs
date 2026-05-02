@@ -12,6 +12,17 @@ public partial class DashboardPage : ContentPage
         NotesCollection.ChildAdded += NotesCollection_ChildAdded;
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        // Llamar a la API para cargar las notas reales al entrar
+        if (BindingContext is DashboardViewModel vm)
+        {
+            await vm.CargarNotasDesdeApiAsync();
+        }
+    }
+
     private async void NotesCollection_ChildAdded(object sender, ElementEventArgs e)
     {
         if (e.Element is not VisualElement element)

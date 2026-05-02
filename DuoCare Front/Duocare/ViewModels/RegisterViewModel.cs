@@ -106,13 +106,16 @@ public partial class RegisterViewModel : ObservableObject
                 Preferences.Remove("CurrentUserPhotoPath");
             }
 
+            // ✅ Forzamos que el perfil no está completado para el nuevo usuario
+            Preferences.Set("ProfileCompleted", false);
+
             await Application.Current.MainPage.DisplayAlert(
                 "OK",
                 "Usuario registrado correctamente. Revisa tu correo para confirmar la cuenta antes de iniciar sesión.",
                 "Aceptar"
             );
 
-            // ✅ vuelve atrás a Login
+            // ✅ vuelve atrás a Login para que el usuario entre con su token
             if (Shell.Current != null)
                 await Shell.Current.GoToAsync("..");
         }
