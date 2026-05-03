@@ -28,9 +28,6 @@
 
             <VerticalStackLayout Spacing="16">
 
-                <Entry Placeholder="Nombre actual"
-                       Text="{Binding CurrentName}" />
-
                 <Entry Placeholder="Nuevo nombre"
                        Text="{Binding NewName}" />
 

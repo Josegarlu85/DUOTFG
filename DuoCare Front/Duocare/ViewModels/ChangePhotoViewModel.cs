@@ -10,7 +10,10 @@ namespace Duocare.ViewModels;
 
 public partial class ChangePhotoViewModel : ObservableObject
 {
-    [ObservableProperty] private string previewImage;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPreview))]
+    private string previewImage;
+
     [ObservableProperty] private string errorMessage;
     [ObservableProperty] private bool hasError;
 
@@ -62,7 +65,7 @@ public partial class ChangePhotoViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
-        if (_selectedPhoto == null)
+        if (_selectedPhoto == null && string.IsNullOrWhiteSpace(PreviewImage))
         {
             ShowError("Selecciona o toma una foto primero.");
             return;
@@ -77,25 +80,29 @@ public partial class ChangePhotoViewModel : ObservableObject
 
         try
         {
-            // 1) Guardar local (como ya hacías)
-            var fileName = $"{email}_profile.jpg";
-            var destinationPath = Path.Combine(FileSystem.AppDataDirectory, fileName);
-            File.Copy(PreviewImage, destinationPath, overwrite: true);
+            string destinationPath = PreviewImage;
+
+            if (_selectedPhoto != null)
+            {
+                var fileName = $"{email}_profile.jpg";
+                destinationPath = Path.Combine(FileSystem.AppDataDirectory, fileName);
+                File.Copy(PreviewImage, destinationPath, overwrite: true);
+            }
 
             var photoKey = $"UserPhoto_{email}";
             Preferences.Set(photoKey, destinationPath);
 
-            // 2) Subir al backend como Base64
-            var bytes = File.ReadAllBytes(destinationPath);
-            var base64 = Convert.ToBase64String(bytes);
+            if (_selectedPhoto != null)
+            {
+                var bytes = File.ReadAllBytes(destinationPath);
+                var base64 = Convert.ToBase64String(bytes);
+                await _api.ChangePhotoAsync(base64);
+            }
 
-            await _api.ChangePhotoAsync(base64);
-
-            // 3) Notificar UI
             WeakReferenceMessenger.Default.Send(new UserPhotoChangedMessage(destinationPath));
 
             await Application.Current.MainPage.DisplayAlert("Éxito", "Tu foto de perfil ha sido actualizada.", "OK");
-            await Shell.Current.GoToAsync("//DashboardPage");
+            await Shell.Current.GoToAsync("..");
         }
         catch
         {

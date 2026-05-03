@@ -16,6 +16,8 @@ public partial class AppShellViewModel : ObservableObject
     [ObservableProperty] private string userName;
     [ObservableProperty] private ImageSource userPhoto;
 
+    // Declaración de todos los comandos necesarios
+    public IRelayCommand GoToDashboardCommand { get; }
     public IRelayCommand GoToAboutCommand { get; }
     public IRelayCommand GoToSettingsCommand { get; }
     public IRelayCommand LogoutCommand { get; }
@@ -23,60 +25,48 @@ public partial class AppShellViewModel : ObservableObject
     public AppShellViewModel()
     {
         var email = Preferences.Get("CurrentUserEmail", "").Trim().ToLowerInvariant();
+        string nameKey = string.IsNullOrWhiteSpace(email) ? "UserName" : $"UserName_{email}";
+        string rawName = Preferences.Get(nameKey, Preferences.Get("UserName", "Usuario"));
 
-        var rawName = Preferences.Get("UserName", "Usuario");
-        UserName = FormatName(rawName);
-
-        string photoPath = "";
-        if (!string.IsNullOrWhiteSpace(email))
+        if (string.IsNullOrWhiteSpace(rawName) || rawName == "Usuario")
         {
-            photoPath = Preferences.Get($"UserPhoto_{email}", "");
+            UserName = !string.IsNullOrWhiteSpace(email) ? email : "Usuario";
+        }
+        else
+        {
+            UserName = FormatName(rawName);
         }
 
+        string photoPath = !string.IsNullOrWhiteSpace(email) ? Preferences.Get($"UserPhoto_{email}", "") : "";
         if (!string.IsNullOrWhiteSpace(photoPath) && File.Exists(photoPath))
             UserPhoto = ImageSource.FromFile(photoPath);
         else
             UserPhoto = "default_avatar.png";
 
+        GoToDashboardCommand = new RelayCommand(OnGoToDashboard);
+        GoToAboutCommand = new RelayCommand(OnGoToAbout);
+        GoToSettingsCommand = new RelayCommand(OnGoToSettings);
+        LogoutCommand = new RelayCommand(OnLogout);
+
         WeakReferenceMessenger.Default.Register<UserPhotoChangedMessage>(this, (r, m) =>
         {
-            if (!string.IsNullOrWhiteSpace(m.Value) && File.Exists(m.Value))
-                UserPhoto = ImageSource.FromFile(m.Value);
-            else
-                UserPhoto = "default_avatar.png";
+            UserPhoto = (!string.IsNullOrWhiteSpace(m.Value) && File.Exists(m.Value))
+                ? ImageSource.FromFile(m.Value)
+                : "default_avatar.png";
         });
 
         WeakReferenceMessenger.Default.Register<UserNameChangedMessage>(this, (r, m) =>
         {
-            UserName = FormatName(m.Value);
+            UserName = string.IsNullOrWhiteSpace(m.Value) ? email : FormatName(m.Value);
         });
-
-        GoToAboutCommand = new RelayCommand(OnGoToAbout);
-        GoToSettingsCommand = new RelayCommand(OnGoToSettings);
-        LogoutCommand = new RelayCommand(OnLogout);
     }
 
-    private string FormatName(string input)
+    private async void OnGoToDashboard()
     {
-        if (string.IsNullOrWhiteSpace(input))
-            return "Usuario";
-
-        input = input.Replace(".", " ")
-                     .Replace("_", " ")
-                     .Replace("-", " ");
-
-        var words = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        for (int i = 0; i < words.Length; i++)
-            words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1).ToLower();
-
-        return string.Join(" ", words);
+        await Shell.Current.GoToAsync("//DashboardPage");
     }
 
-    private async void OnGoToAbout()
-    {
-        await Shell.Current.GoToAsync("//AboutPage");
-    }
+    private async void OnGoToAbout() => await Shell.Current.GoToAsync("//AboutPage");
 
     private async void OnGoToSettings()
     {
@@ -87,7 +77,24 @@ public partial class AppShellViewModel : ObservableObject
     private async void OnLogout()
     {
         Preferences.Remove("CurrentUserEmail");
+        Preferences.Remove("AuthToken");
         Application.Current.MainPage = new NavigationPage(new LoginPage());
         await Task.CompletedTask;
+    }
+
+    private string FormatName(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input) || input.Contains("@")) return input;
+
+        input = input.Replace(".", " ").Replace("_", " ").Replace("-", " ");
+        var words = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        for (int i = 0; i < words.Length; i++)
+        {
+            if (words[i].Length > 0)
+                words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1).ToLower();
+        }
+
+        return string.Join(" ", words);
     }
 }

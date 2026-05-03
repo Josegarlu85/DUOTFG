@@ -119,10 +119,6 @@
                   ContentTemplate="{DataTemplate views:ChangePasswordPage}"
                   FlyoutItemIsVisible="False" />
 
-    <ShellContent Route="ChangeEmailPage"
-                  ContentTemplate="{DataTemplate views:ChangeEmailPage}"
-                  FlyoutItemIsVisible="False" />
-
     <ShellContent Route="ChangeNamePage"
                   ContentTemplate="{DataTemplate views:ChangeNamePage}"
                   FlyoutItemIsVisible="False" />
@@ -182,3 +178,8 @@
     </Shell.FlyoutFooter>
 
 </Shell>
+
+
+
+
+

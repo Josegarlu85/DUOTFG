@@ -21,9 +21,20 @@ public class ApiServices
     private async Task HandleResponseError(HttpResponseMessage response)
     {
         var body = await response.Content.ReadAsStringAsync();
-        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            throw new Exception("Sesión expirada. Cierra sesión y vuelve a entrar.");
 
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            bool isLoginAttempt = response.RequestMessage?.RequestUri?.ToString().Contains("login", StringComparison.OrdinalIgnoreCase) == true;
+
+            if (isLoginAttempt)
+            {
+                throw new Exception(!string.IsNullOrWhiteSpace(body) ? body : "Correo o contraseña incorrectos.");
+            }
+            else
+            {
+                throw new Exception("Tu sesión ha caducado. Por favor, usa el menú para 'Cerrar sesión' y vuelve a entrar.");
+            }
+        }
         throw new Exception($"Error {(int)response.StatusCode}: {body}");
     }
 
@@ -73,7 +84,12 @@ public class ApiServices
         var response = await _httpClient.PostAsJsonAsync("api/auth/login", dto);
         if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
-        var data = await response.Content.ReadFromJsonAsync<LoginResponse>()
+        var options = new System.Text.Json.JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        var data = await response.Content.ReadFromJsonAsync<LoginResponse>(options)
                    ?? throw new Exception("Respuesta de login vacía.");
 
         Preferences.Set("AuthToken", data.Token);
@@ -100,12 +116,6 @@ public class ApiServices
     // ============================================================
     // AUTH - Change*
     // ============================================================
-    public async Task RequestEmailChangeAsync(string newEmail)
-    {
-        EnsureBearerFromPreferences();
-        var res = await _httpClient.PostAsJsonAsync("api/auth/request-email-change", new RequestEmailChangeRequest(newEmail));
-        if (!res.IsSuccessStatusCode) await HandleResponseError(res);
-    }
 
     public async Task<string> ChangeNameAsync(string newName)
     {
@@ -265,8 +275,11 @@ public class LoginResponse
     public string Token { get; set; } = "";
     public string UserId { get; set; } = "";
     public string Email { get; set; } = "";
+    public string FullName { get; set; } = "";
+    public string ProfilePhotoBase64 { get; set; } = "";
     public DateTime Expires { get; set; }
 }
+
 
 public class UserListDto
 {
@@ -289,7 +302,6 @@ public class RecordResponse
     public string ExtraDataJson { get; set; } = "";
 }
 
-public record RequestEmailChangeRequest(string NewEmail);
 public record ChangeNameRequest(string NewName);
 public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 public record ChangePhotoRequest(string Base64Image);

@@ -50,12 +50,6 @@
                             TextColor="{StaticResource TextPrimary}"
                             CornerRadius="12" />
 
-                    <Button Text="Cambiar correo"
-                            Command="{Binding ChangeEmailCommand}"
-                            BackgroundColor="{StaticResource ButtonSecondary}"
-                            TextColor="{StaticResource TextPrimary}"
-                            CornerRadius="12" />
-
                     <Button Text="Cambiar nombre"
                             Command="{Binding ChangeNameCommand}"
                             BackgroundColor="{StaticResource ButtonSecondary}"

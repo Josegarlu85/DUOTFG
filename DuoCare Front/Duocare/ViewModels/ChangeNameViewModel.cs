@@ -9,9 +9,7 @@ namespace Duocare.ViewModels;
 
 public partial class ChangeNameViewModel : ObservableObject
 {
-    [ObservableProperty] private string currentName;
     [ObservableProperty] private string newName;
-
     [ObservableProperty] private string errorMessage;
     [ObservableProperty] private bool hasError;
 
@@ -20,11 +18,6 @@ public partial class ChangeNameViewModel : ObservableObject
     public ChangeNameViewModel()
     {
         HasError = false;
-
-        // Solo UI: nombre actual (si guardas el email en prefs)
-        var email = Preferences.Get("CurrentUserEmail", "").Trim().ToLowerInvariant();
-        var nameKey = $"UserName_{email}";
-        CurrentName = Preferences.Get(nameKey, "");
     }
 
     [RelayCommand]
@@ -34,16 +27,15 @@ public partial class ChangeNameViewModel : ObservableObject
 
         if (string.IsNullOrWhiteSpace(NewName) || NewName.Trim().Length < 2)
         {
-            ShowError("Introduce un nombre válido.");
+            ErrorMessage = "Introduce un nombre válido.";
+            HasError = true;
             return;
         }
 
         try
         {
-            // ✅ backend real
             var updated = await _api.ChangeNameAsync(NewName.Trim());
 
-            // cache UI local (opcional)
             var email = Preferences.Get("CurrentUserEmail", "").Trim().ToLowerInvariant();
             Preferences.Set($"UserName_{email}", updated);
             Preferences.Set("UserName", updated);
@@ -51,17 +43,12 @@ public partial class ChangeNameViewModel : ObservableObject
             WeakReferenceMessenger.Default.Send(new UserNameChangedMessage(updated));
 
             await Application.Current.MainPage.DisplayAlert("Éxito", "Tu nombre ha sido actualizado.", "OK");
-            await Shell.Current.GoToAsync("//DashboardPage");
+            await Shell.Current.GoToAsync("..");
         }
         catch (Exception ex)
         {
-            ShowError(ex.Message);
+            ErrorMessage = ex.Message;
+            HasError = true;
         }
-    }
-
-    private void ShowError(string message)
-    {
-        ErrorMessage = message;
-        HasError = true;
     }
 }

@@ -92,9 +92,6 @@
 	  <MauiXaml Update="Views\CalendarPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\ChangeEmailPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Views\ChangeNamePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

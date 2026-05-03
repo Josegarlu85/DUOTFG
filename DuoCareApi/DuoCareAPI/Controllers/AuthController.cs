@@ -65,7 +65,7 @@ namespace DuoCareAPI.Controllers
                 var confirmationUrl =
                     $"{baseUrl}/api/auth/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
 
-                // ✅ Envío de email con Mailtrap
+                // Envío de email con Mailtrap, aparecera en el sandbx
                 await _email.SendEmailAsync(
                     user.Email!,
                     "Confirma tu cuenta",
@@ -158,7 +158,7 @@ namespace DuoCareAPI.Controllers
                 var resetUrl =
                     $"{baseUrl}/api/auth/reset-password?userId={user.Id}&token={Uri.EscapeDataString(token)}";
 
-                // ✅ Envío de email con Mailtrap
+                // Envío de email con Mailtrap, aparecera en el sandbox
                 await _email.SendEmailAsync(
                     user.Email!,
                     "Restablecer contraseña",
@@ -177,12 +177,63 @@ namespace DuoCareAPI.Controllers
         }
 
         // ================= LOGOUT =================
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return Ok("Sesión cerrada correctamente.");
+        }
+
+        // ================= CHANGE PASSWORD =================
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userId = User.FindFirst("uid")?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound("Usuario no encontrado.");
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            if (!result.Succeeded) return BadRequest("La contraseña actual es incorrecta o la nueva no cumple los requisitos.");
+
+            return Ok();
+        }
+
+        // ================= CHANGE NAME =================
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost("change-name")]
+        public async Task<IActionResult> ChangeName([FromBody] ChangeNameRequestDto dto)
+        {
+            var userId = User.FindFirst("uid")?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound("Usuario no encontrado.");
+
+            user.FullName = dto.NewName;
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new { FullName = user.FullName });
+        }
+
+        // ================= CHANGE FOTO =================
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost("change-photo")]
+        public async Task<IActionResult> ChangePhoto([FromBody] ChangePhotoDto dto)
+        {
+            var userId = User.FindFirst("uid")?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound("Usuario no encontrado.");
+
+            user.ProfilePhotoBase64 = dto.Base64Image;
+            await _userManager.UpdateAsync(user);
+
+            return Ok();
         }
     }
 }

@@ -1,9 +1,9 @@
 using System;
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Duocare.Services;
 using Duocare.Views;
-using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
 
@@ -31,22 +31,42 @@ public partial class LoginViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
         {
-            await Application.Current.MainPage.DisplayAlert("Error", "Introduce email y contraseÃ±a", "OK");
+            await Application.Current.MainPage.DisplayAlert("Error", "Introduce email y contraseña", "OK");
             return;
         }
 
         try
         {
             var result = await _api.LoginAsync(new LoginRequest(Email.Trim(), Password));
-
-            Preferences.Set("UserName", result.Email);
-
             var emailKey = result.Email.Trim().ToLowerInvariant();
-            var photoPath = Preferences.Get($"UserPhoto_{emailKey}", "");
-            if (!string.IsNullOrWhiteSpace(photoPath))
-                Preferences.Set("CurrentUserPhotoPath", photoPath);
+
+            Preferences.Set("CurrentUserEmail", emailKey);
+            Preferences.Set("UserName", result.FullName);
+            Preferences.Set($"UserName_{emailKey}", result.FullName);
+
+            // === LOGICA DE PRIMER LOGIN POR USUARIO ===
+            // Comprobamos si este email específico ya ha entrado alguna vez
+            bool yaHaEntradoAntes = Preferences.Get($"UserHasLoggedIn_{emailKey}", false);
+
+            if (!yaHaEntradoAntes)
+            {
+                // Es su primera vez: forzamos que salga la configuración de perfil
+                Preferences.Set("ProfileCompleted", false);
+                Preferences.Set($"UserHasLoggedIn_{emailKey}", true); // Marcamos que para la prpxima ya no es nuevo
+            }
             else
-                Preferences.Remove("CurrentUserPhotoPath");
+            {
+                Preferences.Set("ProfileCompleted", true);
+            }
+
+            if (!string.IsNullOrWhiteSpace(result.ProfilePhotoBase64))
+            {
+                var photoPath = Path.Combine(FileSystem.AppDataDirectory, $"{emailKey}_profile.jpg");
+                var bytes = Convert.FromBase64String(result.ProfilePhotoBase64);
+                File.WriteAllBytes(photoPath, bytes);
+                Preferences.Set($"UserPhoto_{emailKey}", photoPath);
+                Preferences.Set("CurrentUserPhotoPath", photoPath);
+            }
 
             Application.Current.MainPage = new AppShell();
         }
@@ -59,21 +79,16 @@ public partial class LoginViewModel : ObservableObject
     private async void OnRegister()
     {
         if (Shell.Current != null)
-        {
             await Shell.Current.GoToAsync("RegisterPage");
-            return;
-        }
-        await Application.Current.MainPage.Navigation.PushAsync(new RegisterPage());
+        else
+            await Application.Current.MainPage.Navigation.PushAsync(new RegisterPage());
     }
 
     private async void OnForgotPassword()
     {
         if (Shell.Current != null)
-        {
             await Shell.Current.GoToAsync("ForgotPasswordPage");
-            return;
-        }
-
-        await Application.Current.MainPage.DisplayAlert("Info", "PÃ¡gina de recuperaciÃ³n no registrada.", "OK");
+        else
+            await Application.Current.MainPage.DisplayAlert("Info", "Página de recuperación no registrada.", "OK");
     }
 }

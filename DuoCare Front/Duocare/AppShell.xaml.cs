@@ -49,7 +49,6 @@ public partial class AppShell : Shell
         // AJUSTES DE CUENTA
         // =========================
         Routing.RegisterRoute(nameof(ChangePasswordPage), typeof(ChangePasswordPage));
-        Routing.RegisterRoute(nameof(ChangeEmailPage), typeof(ChangeEmailPage));
         Routing.RegisterRoute(nameof(ChangeNamePage), typeof(ChangeNamePage));
         Routing.RegisterRoute(nameof(ChangePhotoPage), typeof(ChangePhotoPage));
         Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));

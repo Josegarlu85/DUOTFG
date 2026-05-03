@@ -33,10 +33,6 @@ public partial class SettingsViewModel : ObservableObject
         => await Shell.Current.GoToAsync("//SettingsPage/ChangePasswordPage");
 
     [RelayCommand]
-    private async Task ChangeEmail()
-        => await Shell.Current.GoToAsync("//SettingsPage/ChangeEmailPage");
-
-    [RelayCommand]
     private async Task ChangeName()
         => await Shell.Current.GoToAsync("//SettingsPage/ChangeNamePage");
 

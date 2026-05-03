@@ -15,7 +15,7 @@
     }
 
     // Nombre (FullName)
-    public class ChangeNameDto
+    public class ChangeNameRequestDto
     {
         public string NewName { get; set; }
     }
