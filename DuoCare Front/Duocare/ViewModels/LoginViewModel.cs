@@ -37,7 +37,6 @@ public partial class LoginViewModel : ObservableObject
 
         try
         {
-            // ✅ Login real contra el backend
             var result = await _api.LoginAsync(new LoginRequest(Email.Trim(), Password));
 
             Preferences.Set("UserName", result.Email);
@@ -49,9 +48,6 @@ public partial class LoginViewModel : ObservableObject
             else
                 Preferences.Remove("CurrentUserPhotoPath");
 
-            // ✅ CARGAMOS EL SHELL
-            // Al hacer esto, el constructor de AppShell se ejecuta, 
-            // corre tu RedirectAsync() y decide si mandarlo al Setup o al Dashboard.
             Application.Current.MainPage = new AppShell();
         }
         catch (Exception ex)

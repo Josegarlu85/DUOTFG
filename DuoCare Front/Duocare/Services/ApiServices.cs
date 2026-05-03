@@ -12,8 +12,20 @@ public class ApiServices
 {
     private static readonly HttpClient _httpClient = new HttpClient
     {
-        BaseAddress = new Uri("http://localhost:5032/")
+        BaseAddress = new Uri("http://localhost:5032/") 
     };
+
+    // ============================================================
+    // GESTOR DE ERRORES INTELIGENTE
+    // ============================================================
+    private async Task HandleResponseError(HttpResponseMessage response)
+    {
+        var body = await response.Content.ReadAsStringAsync();
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            throw new Exception("Sesión expirada. Cierra sesión y vuelve a entrar.");
+
+        throw new Exception($"Error {(int)response.StatusCode}: {body}");
+    }
 
     // ============================================================
     // Helpers JWT
@@ -48,26 +60,18 @@ public class ApiServices
     }
 
     // ============================================================
-    // TEST
-    // ============================================================
-    public async Task<string> GetTestAsync()
-        => await _httpClient.GetStringAsync("api/test");
-
-    // ============================================================
     // AUTH
     // ============================================================
     public async Task RegisterAsync(RegisterRequest dto)
     {
         var response = await _httpClient.PostAsJsonAsync("api/auth/register", dto);
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
     }
 
     public async Task<LoginResponse> LoginAsync(LoginRequest dto)
     {
         var response = await _httpClient.PostAsJsonAsync("api/auth/login", dto);
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         var data = await response.Content.ReadFromJsonAsync<LoginResponse>()
                    ?? throw new Exception("Respuesta de login vacía.");
@@ -83,8 +87,7 @@ public class ApiServices
     public async Task ForgotPasswordAsync(string email)
     {
         var response = await _httpClient.PostAsJsonAsync("api/auth/forgot-password", new { Email = email });
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
     }
 
     public async Task LogoutAsync()
@@ -100,27 +103,15 @@ public class ApiServices
     public async Task RequestEmailChangeAsync(string newEmail)
     {
         EnsureBearerFromPreferences();
-
-        var res = await _httpClient.PostAsJsonAsync(
-            "api/auth/request-email-change",
-            new RequestEmailChangeRequest(newEmail)
-        );
-
-        var body = await res.Content.ReadAsStringAsync();
-        if (!res.IsSuccessStatusCode) throw new Exception(body);
+        var res = await _httpClient.PostAsJsonAsync("api/auth/request-email-change", new RequestEmailChangeRequest(newEmail));
+        if (!res.IsSuccessStatusCode) await HandleResponseError(res);
     }
 
     public async Task<string> ChangeNameAsync(string newName)
     {
         EnsureBearerFromPreferences();
-
-        var res = await _httpClient.PostAsJsonAsync(
-            "api/auth/change-name",
-            new ChangeNameRequest(newName)
-        );
-
-        var body = await res.Content.ReadAsStringAsync();
-        if (!res.IsSuccessStatusCode) throw new Exception(body);
+        var res = await _httpClient.PostAsJsonAsync("api/auth/change-name", new ChangeNameRequest(newName));
+        if (!res.IsSuccessStatusCode) await HandleResponseError(res);
 
         var json = await res.Content.ReadFromJsonAsync<ChangeNameResponse>();
         return json?.FullName ?? newName;
@@ -129,73 +120,62 @@ public class ApiServices
     public async Task ChangePasswordAsync(string currentPassword, string newPassword)
     {
         EnsureBearerFromPreferences();
-
-        var res = await _httpClient.PostAsJsonAsync(
-            "api/auth/change-password",
-            new ChangePasswordRequest(currentPassword, newPassword)
-        );
-
-        var body = await res.Content.ReadAsStringAsync();
-        if (!res.IsSuccessStatusCode) throw new Exception(body);
+        var res = await _httpClient.PostAsJsonAsync("api/auth/change-password", new ChangePasswordRequest(currentPassword, newPassword));
+        if (!res.IsSuccessStatusCode) await HandleResponseError(res);
     }
 
     public async Task ChangePhotoAsync(string base64Image)
     {
         EnsureBearerFromPreferences();
-
-        var res = await _httpClient.PostAsJsonAsync(
-            "api/auth/change-photo",
-            new ChangePhotoRequest(base64Image)
-        );
-
-        var body = await res.Content.ReadAsStringAsync();
-        if (!res.IsSuccessStatusCode) throw new Exception(body);
+        var res = await _httpClient.PostAsJsonAsync("api/auth/change-photo", new ChangePhotoRequest(base64Image));
+        if (!res.IsSuccessStatusCode) await HandleResponseError(res);
     }
 
     // ============================================================
-    // USERS (PROTEGIDO) -> UsersController
+    // USERS
     // ============================================================
     public async Task<UserListDto> FindUserByEmailAsync(string email)
     {
         EnsureBearerFromPreferences();
-
         var url = $"api/users/find?email={Uri.EscapeDataString(email)}";
         var response = await _httpClient.GetAsync(url);
-        var body = await response.Content.ReadAsStringAsync();
 
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<UserListDto>()
                ?? throw new Exception("Respuesta vacía al buscar usuario.");
     }
 
     // ============================================================
-    // RECORDS (PROTEGIDO) -> RecordsController
+    // RECORDS
     // ============================================================
     public async Task<RecordResponse> CreateRecordAsync(RecordCreateRequest dto)
     {
         EnsureBearerFromPreferences();
-
         var response = await _httpClient.PostAsJsonAsync("api/records", dto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            var body = await response.Content.ReadAsStringAsync();
-            // ESTO REVELARÁ EL NÚMERO DEL ERROR
-            throw new Exception($"HTTP {(int)response.StatusCode} - {response.ReasonPhrase}. {body}");
-        }
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<RecordResponse>()
                ?? throw new Exception("Respuesta vacía al crear registro.");
     }
 
+    public async Task<RecordResponse> UpdateRecordAsync(int id, RecordCreateRequest dto)
+    {
+        EnsureBearerFromPreferences();
+        var response = await _httpClient.PutAsJsonAsync($"api/records/{id}", dto);
+
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
+
+        return await response.Content.ReadFromJsonAsync<RecordResponse>()
+               ?? throw new Exception("Respuesta vacía al actualizar registro.");
+    }
+
     public async Task<RecordResponse?> GetMyRecordAsync()
     {
         EnsureBearerFromPreferences();
-
         var response = await _httpClient.GetAsync("api/records/me");
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<RecordResponse?>();
     }
@@ -203,10 +183,8 @@ public class ApiServices
     public async Task<List<RecordResponse>> GetMyRecordsAsync()
     {
         EnsureBearerFromPreferences();
-
         var response = await _httpClient.GetAsync("api/records/me/all");
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<List<RecordResponse>>()
                ?? new List<RecordResponse>();
@@ -215,24 +193,20 @@ public class ApiServices
     public async Task<RecordResponse?> GetRecordsByUserIdAsync(string userId)
     {
         EnsureBearerFromPreferences();
-
         var response = await _httpClient.GetAsync($"api/records/user/{Uri.EscapeDataString(userId)}");
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<RecordResponse?>();
     }
 
     // ============================================================
-    // ✅ APPOINTMENTS (PROTEGIDO) -> AppointmentsController
+    // APPOINTMENTS
     // ============================================================
     public async Task<AppointmentResponse> CreateAppointmentAsync(AppointmentCreateRequest dto)
     {
         EnsureBearerFromPreferences();
-
         var response = await _httpClient.PostAsJsonAsync("api/appointments", dto);
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<AppointmentResponse>()
                ?? throw new Exception("Respuesta vacía al crear cita.");
@@ -241,10 +215,8 @@ public class ApiServices
     public async Task<AppointmentsPagedResponse> GetMyAppointmentsAsync(int page = 1, int pageSize = 10)
     {
         EnsureBearerFromPreferences();
-
         var response = await _httpClient.GetAsync($"api/appointments/me?page={page}&pageSize={pageSize}");
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<AppointmentsPagedResponse>()
                ?? new AppointmentsPagedResponse();
@@ -253,11 +225,9 @@ public class ApiServices
     public async Task<AppointmentResponse?> AcceptAppointmentAsync(int id)
     {
         EnsureBearerFromPreferences();
-
         using var content = new StringContent("");
         var response = await _httpClient.PutAsync($"api/appointments/{id}/accept", content);
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<AppointmentResponse?>();
     }
@@ -265,11 +235,9 @@ public class ApiServices
     public async Task<AppointmentResponse?> RejectAppointmentAsync(int id)
     {
         EnsureBearerFromPreferences();
-
         using var content = new StringContent("");
         var response = await _httpClient.PutAsync($"api/appointments/{id}/reject", content);
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<AppointmentResponse?>();
     }
@@ -277,11 +245,9 @@ public class ApiServices
     public async Task<AppointmentResponse?> CompleteAppointmentAsync(int id)
     {
         EnsureBearerFromPreferences();
-
         using var content = new StringContent("");
         var response = await _httpClient.PutAsync($"api/appointments/{id}/complete", content);
-        var body = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode) throw new Exception(body);
+        if (!response.IsSuccessStatusCode) await HandleResponseError(response);
 
         return await response.Content.ReadFromJsonAsync<AppointmentResponse?>();
     }
@@ -333,7 +299,6 @@ public class ChangeNameResponse
     public string FullName { get; set; } = "";
 }
 
-// Appointments DTOs (Frontend)
 public record AppointmentCreateRequest(string ReceiverId, DateTime Date, double Latitude, double Longitude);
 
 public class AppointmentResponse

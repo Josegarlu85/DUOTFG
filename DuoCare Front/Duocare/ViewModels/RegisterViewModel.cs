@@ -28,7 +28,6 @@ public partial class RegisterViewModel : ObservableObject
     public IRelayCommand RegisterCommand { get; }
     public IAsyncRelayCommand PickPhotoCommand { get; }
 
-    // ✅ API
     private readonly ApiServices _api = new ApiServices();
 
     public RegisterViewModel()
@@ -87,12 +86,12 @@ public partial class RegisterViewModel : ObservableObject
             // ✅ Registro real en backend
             await _api.RegisterAsync(new RegisterRequest(
                 Email.Trim(),
-                UserName.Trim(),     // lo enviamos como FullName al backend
+                UserName.Trim(),     
                 Password,
                 ConfirmPassword
             ));
 
-            // (Opcional) guardas localmente la foto para UI
+            // guardams localmente la foto para UI
             var emailKey = Email.Trim().ToLowerInvariant();
             Preferences.Set("CurrentUserEmail", emailKey);
 
@@ -106,7 +105,6 @@ public partial class RegisterViewModel : ObservableObject
                 Preferences.Remove("CurrentUserPhotoPath");
             }
 
-            // ✅ Forzamos que el perfil no está completado para el nuevo usuario
             Preferences.Set("ProfileCompleted", false);
 
             await Application.Current.MainPage.DisplayAlert(
@@ -115,7 +113,6 @@ public partial class RegisterViewModel : ObservableObject
                 "Aceptar"
             );
 
-            // ✅ vuelve atrás a Login para que el usuario entre con su token
             if (Shell.Current != null)
                 await Shell.Current.GoToAsync("..");
         }

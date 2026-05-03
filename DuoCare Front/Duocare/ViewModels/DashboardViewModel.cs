@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Duocare.Services;
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using System.Net.Http.Json;
-using System.Net.Http.Headers;
+using Microsoft.Maui.Storage;
 
 namespace Duocare.ViewModels;
 
@@ -18,9 +18,9 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<NoteItem> notes = new();
 
-    private readonly HttpClient _httpClient;
+    private readonly ApiServices _api = new ApiServices();
 
-    private readonly string _apiUrl = "https://localhost:7056/";
+    private int? _currentRecordId;
 
     public IRelayCommand AddNoteCommand { get; }
     public IRelayCommand<NoteItem> ToggleNoteCommand { get; }
@@ -30,8 +30,6 @@ public partial class DashboardViewModel : ObservableObject
 
     public DashboardViewModel()
     {
-        _httpClient = new HttpClient { BaseAddress = new Uri(_apiUrl) };
-
         AddNoteCommand = new AsyncRelayCommand(OnAddNote);
         ToggleNoteCommand = new AsyncRelayCommand<NoteItem>(OnToggleNote);
         EditNoteCommand = new AsyncRelayCommand<NoteItem>(OnEditNote);
@@ -43,25 +41,18 @@ public partial class DashboardViewModel : ObservableObject
     {
         try
         {
-            var token = Preferences.Get("AuthToken", "");
-            if (string.IsNullOrEmpty(token)) return;
+            var records = await _api.GetMyRecordsAsync();
+            var notasRecord = records.FirstOrDefault(r => r.Name == "Notas del Dashboard");
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var response = await _httpClient.GetAsync("api/records/me");
-
-            if (response.IsSuccessStatusCode)
+            if (notasRecord != null)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                using var doc = JsonDocument.Parse(content);
-                var root = doc.RootElement;
+                _currentRecordId = notasRecord.Id; 
 
-                if (root.TryGetProperty("extraDataJson", out JsonElement extraDataElement))
+                if (!string.IsNullOrWhiteSpace(notasRecord.ExtraDataJson) && notasRecord.ExtraDataJson != "[]")
                 {
-                    var extraData = extraDataElement.GetString();
-                    if (!string.IsNullOrEmpty(extraData) && extraData != "[]")
+                    try
                     {
-                        var notasRecuperadas = JsonSerializer.Deserialize<List<NoteItem>>(extraData);
+                        var notasRecuperadas = JsonSerializer.Deserialize<List<NoteItem>>(notasRecord.ExtraDataJson);
                         if (notasRecuperadas != null)
                         {
                             Notes.Clear();
@@ -69,12 +60,23 @@ public partial class DashboardViewModel : ObservableObject
                                 Notes.Add(item);
                         }
                     }
+                    catch
+                    {
+                        Notes.Clear();
+                    }
                 }
+            }
+            else
+            {
+                // Si la BD dice que no hay notas, limpiamos nuestro ID para no enviar basura
+                _currentRecordId = null;
+                Notes.Clear();
             }
         }
         catch (Exception ex)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", $"No se pudieron cargar las notas: {ex.Message}", "OK");
+            // Ignoramos errores silenciosos de carga inicial para no molestar al usuario
+            Console.WriteLine($"Error cargando: {ex.Message}");
         }
     }
 
@@ -84,39 +86,43 @@ public partial class DashboardViewModel : ObservableObject
         {
             string notasJson = JsonSerializer.Serialize(Notes);
 
-            var recordDto = new
-            {
-                Name = "Notas del Dashboard",
-                Type = Preferences.Get("FichaSeleccionada", "Ambos"),
-                Medication = "",
-                MedicalData = "",
-                Notes = "Lista de tareas guardada desde el Dashboard",
-                ExtraDataJson = notasJson
-            };
+            var recordDto = new RecordCreateRequest(
+                Name: "Notas del Dashboard",
+                Type: Preferences.Get("FichaSeleccionada", "Ambos") ?? "Ambos",
+                Medication: "",
+                MedicalData: "",
+                Notes: "Lista de tareas guardada desde el Dashboard",
+                ExtraDataJson: notasJson
+            );
 
-            var token = Preferences.Get("AuthToken", "");
-            if (!string.IsNullOrEmpty(token))
+            if (_currentRecordId.HasValue && _currentRecordId.Value > 0)
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                try
+                {
+                    await _api.UpdateRecordAsync(_currentRecordId.Value, recordDto);
+                }
+                catch
+                {
+                    var newRecord = await _api.CreateRecordAsync(recordDto);
+                    _currentRecordId = newRecord.Id;
+                }
             }
-
-            var response = await _httpClient.PostAsJsonAsync("api/records", recordDto);
-
-            if (!response.IsSuccessStatusCode)
+            else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "No se pudieron guardar las notas en la nube.", "OK");
+                var createdRecord = await _api.CreateRecordAsync(recordDto);
+                _currentRecordId = createdRecord.Id;
             }
         }
         catch (Exception ex)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", $"Fallo de conexión: {ex.Message}", "OK");
+            await Application.Current.MainPage.DisplayAlert("Error", $"Error crítico: {ex.Message}", "OK");
         }
     }
 
     private async Task OnAddNote()
     {
         string nuevaNota = await Application.Current.MainPage.DisplayPromptAsync(
-            "Nueva nota", "Escribe una nota importante:", "Guardar", "Cancelar", placeholder: "Ej: Recordar llevar informe médico");
+            "Nueva nota", "Escribe una nota importante:", "Guardar", "Cancelar");
 
         if (!string.IsNullOrWhiteSpace(nuevaNota))
         {
@@ -137,10 +143,7 @@ public partial class DashboardViewModel : ObservableObject
     private async Task OnEditNote(NoteItem note)
     {
         if (note == null) return;
-
-        string editada = await Application.Current.MainPage.DisplayPromptAsync(
-            "Editar nota", "Modifica el texto:", "Guardar", "Cancelar", initialValue: note.Text);
-
+        string editada = await Application.Current.MainPage.DisplayPromptAsync("Editar", "Cambia el texto:", "OK", "Cancelar", initialValue: note.Text);
         if (!string.IsNullOrWhiteSpace(editada) && editada != note.Text)
         {
             note.Text = editada;
@@ -151,11 +154,7 @@ public partial class DashboardViewModel : ObservableObject
     private async Task OnDeleteNote(NoteItem note)
     {
         if (note == null) return;
-
-        bool confirmar = await Application.Current.MainPage.DisplayAlert(
-            "Eliminar nota", "¿Seguro que quieres eliminar esta nota?", "Sí", "No");
-
-        if (confirmar)
+        if (await Application.Current.MainPage.DisplayAlert("Eliminar", "¿Borrar esta nota?", "Sí", "No"))
         {
             Notes.Remove(note);
             await GuardarEnApiAsync();
