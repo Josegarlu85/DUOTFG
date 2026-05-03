@@ -11,7 +11,7 @@ namespace DuoCareAPI.Controllers
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] 
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class RecordsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -23,7 +23,6 @@ namespace DuoCareAPI.Controllers
             _logger = logger;
         }
 
-        // Crea un registro médico del usuario (niño o mascota o ambos, todos un poco animales)
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] RecordDto dto)
         {
@@ -50,18 +49,17 @@ namespace DuoCareAPI.Controllers
                 _context.Records.Add(record);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Registro médico creado para usuario {UserId}", userId);
+                _logger.LogInformation("Registro médico creado para usuario {UserId} con ID {RecordId}", userId, record.Id);
                 
-                return Ok(record); // Éxito
+                return Ok(record); 
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al crear registro");
-                return StatusCode(500, "Error interno"); // Fallo (este return arregla el CS0161)
+                return StatusCode(500, "Error interno"); 
             }
         }
 
-        // Devuelve el primer registro del usuario autenticado (si solo manejas 1)
         [HttpGet("me")]
         public async Task<IActionResult> GetMine()
         {
@@ -77,7 +75,6 @@ namespace DuoCareAPI.Controllers
             return Ok(record);
         }
 
-        // Devuelve lista de registros del usuario autenticado
         [HttpGet("me/all")]
         public async Task<IActionResult> GetMineAll()
         {
@@ -92,6 +89,27 @@ namespace DuoCareAPI.Controllers
 
             return Ok(records);
         }
+
+        [HttpPut("{id}")]
+public async Task<IActionResult> Update(int id, [FromBody] RecordDto dto)
+{
+    var userId = User.FindFirst("uid")?.Value;
+    if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+    var record = await _context.Records.FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
+    
+    if (record == null) return NotFound();
+
+    record.Name = dto.Name;
+    record.Type = dto.Type ?? "Ambos";
+    record.Medication = dto.Medication ?? "";
+    record.MedicalData = dto.MedicalData ?? "";
+    record.Notes = dto.Notes ?? "";
+    record.ExtraDataJson = dto.ExtraDataJson ?? "[]";
+
+    await _context.SaveChangesAsync();
+    return Ok(record);
+}
 
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUser(string id)
