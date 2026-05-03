@@ -1,21 +1,19 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Duocare.Views;
-using Microsoft.Maui.Controls; // ImageSource
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
 using System.IO;
-
-// ⭐ AÑADIDOS
 using CommunityToolkit.Mvvm.Messaging;
 using Duocare.Messages;
+using System.Threading.Tasks;
+using System;
 
 namespace Duocare.ViewModels;
 
 public partial class AppShellViewModel : ObservableObject
 {
     [ObservableProperty] private string userName;
-
-    // FOTO DE USUARIO
     [ObservableProperty] private ImageSource userPhoto;
 
     public IRelayCommand GoToAboutCommand { get; }
@@ -24,29 +22,15 @@ public partial class AppShellViewModel : ObservableObject
 
     public AppShellViewModel()
     {
-        // ============================
-        // ⭐ CARGAR DATOS POR USUARIO
-        // ============================
         var email = Preferences.Get("CurrentUserEmail", "").Trim().ToLowerInvariant();
 
-        // --- Nombre ---
-        if (!string.IsNullOrWhiteSpace(email))
-        {
-            var nameKey = $"UserName_{email}";
-            var raw = Preferences.Get(nameKey, "Usuario");
-            UserName = FormatName(raw);
-        }
-        else
-        {
-            UserName = "Usuario";
-        }
+        var rawName = Preferences.Get("UserName", "Usuario");
+        UserName = FormatName(rawName);
 
-        // --- Foto ---
         string photoPath = "";
         if (!string.IsNullOrWhiteSpace(email))
         {
-            var photoKey = $"UserPhoto_{email}";
-            photoPath = Preferences.Get(photoKey, "");
+            photoPath = Preferences.Get($"UserPhoto_{email}", "");
         }
 
         if (!string.IsNullOrWhiteSpace(photoPath) && File.Exists(photoPath))
@@ -54,7 +38,6 @@ public partial class AppShellViewModel : ObservableObject
         else
             UserPhoto = "default_avatar.png";
 
-        // ⭐ ESCUCHAR CAMBIO DE FOTO
         WeakReferenceMessenger.Default.Register<UserPhotoChangedMessage>(this, (r, m) =>
         {
             if (!string.IsNullOrWhiteSpace(m.Value) && File.Exists(m.Value))
@@ -63,7 +46,6 @@ public partial class AppShellViewModel : ObservableObject
                 UserPhoto = "default_avatar.png";
         });
 
-        // ⭐ ESCUCHAR CAMBIO DE NOMBRE
         WeakReferenceMessenger.Default.Register<UserNameChangedMessage>(this, (r, m) =>
         {
             UserName = FormatName(m.Value);
@@ -91,7 +73,6 @@ public partial class AppShellViewModel : ObservableObject
         return string.Join(" ", words);
     }
 
-    // ⭐ NAVEGACIÓN CORRECTA DEL SHELL
     private async void OnGoToAbout()
     {
         await Shell.Current.GoToAsync("//AboutPage");
@@ -105,9 +86,7 @@ public partial class AppShellViewModel : ObservableObject
 
     private async void OnLogout()
     {
-        // ⭐ SOLO cerrar sesión, NO borrar datos del usuario
         Preferences.Remove("CurrentUserEmail");
-
         Application.Current.MainPage = new NavigationPage(new LoginPage());
         await Task.CompletedTask;
     }

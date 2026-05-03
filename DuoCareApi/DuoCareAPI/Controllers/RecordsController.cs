@@ -11,6 +11,11 @@ namespace DuoCareAPI.Controllers
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/[controller]")]
+     // =========================================================================
+// Obliga a la API a validar mediante Token (JWT) en lugar de buscar Cookies 
+// de navegador. Esto evita el error 404 de redirección a un Login web.
+//2 horas sufridas aqui :(
+// =========================================================================
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class RecordsController : ControllerBase
     {

@@ -10,12 +10,10 @@
     Shell.NavBarHasShadow="False"
     FlyoutBehavior="Flyout">
 
-    <!-- BindingContext -->
     <Shell.BindingContext>
         <vm:AppShellViewModel />
     </Shell.BindingContext>
 
-    <!-- ⭐ CABECERA CON FOTO + NOMBRE (CÍRCULO 140px) -->
     <Shell.FlyoutHeader>
         <VerticalStackLayout Padding="20,40,20,20"
                              Spacing="10"
@@ -77,7 +75,6 @@
         </VerticalStackLayout>
     </Shell.FlyoutHeader>
 
-    <!-- MENÚ -->
     <FlyoutItem Title="🏠 Dashboard">
         <ShellContent Route="DashboardPage"
                       ContentTemplate="{DataTemplate views:DashboardPage}" />
@@ -98,7 +95,6 @@
                       ContentTemplate="{DataTemplate views:AgreementsPage}" />
     </FlyoutItem>
 
-    <!-- ⭐⭐ PÁGINAS OCULTAS ⭐⭐ -->
     <ShellContent Route="PetFormPage"
                   ContentTemplate="{DataTemplate views:PetFormPage}"
                   FlyoutItemIsVisible="False" />
@@ -115,7 +111,6 @@
                   ContentTemplate="{DataTemplate views:ProfileSetupPage}"
                   FlyoutItemIsVisible="False" />
 
-    <!-- ⭐⭐ AJUSTES ⭐⭐ -->
     <ShellContent Route="SettingsPage"
                   ContentTemplate="{DataTemplate views:SettingsPage}"
                   FlyoutItemIsVisible="False" />
@@ -136,18 +131,14 @@
                   ContentTemplate="{DataTemplate views:ChangePhotoPage}"
                   FlyoutItemIsVisible="False" />
 
-    <!-- ⭐⭐⭐ AÑADIR SOLO ESTO (NECESARIO PARA QUE ABOUTPAGE SEA RAÍZ) ⭐⭐⭐ -->
     <ShellContent Route="AboutPage"
                   ContentTemplate="{DataTemplate views:AboutPage}"
                   FlyoutItemIsVisible="False" />
-    <!-- ⭐⭐⭐ FIN DE LO ÚNICO NECESARIO ⭐⭐⭐ -->
 
-    <!-- ⭐⭐⭐ DummyPage (no se toca) ⭐⭐⭐ -->
     <ShellContent Route="DummyPage"
                   ContentTemplate="{DataTemplate views:DashboardPage}"
                   FlyoutItemIsVisible="False" />
 
-    <!-- FOOTER -->
     <Shell.FlyoutFooter>
         <VerticalStackLayout Padding="20" Spacing="18">
 

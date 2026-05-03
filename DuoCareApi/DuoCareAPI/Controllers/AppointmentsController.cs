@@ -13,6 +13,7 @@ namespace DuoCareAPI.Controllers
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class AppointmentsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -27,7 +28,6 @@ namespace DuoCareAPI.Controllers
         // =========================
         // CREATE
         // =========================
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AppointmentDto dto)
         {
@@ -81,7 +81,6 @@ namespace DuoCareAPI.Controllers
         // =========================
         // GET BY ID
         // =========================
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -113,7 +112,6 @@ namespace DuoCareAPI.Controllers
         // =========================
         // GET MY APPOINTMENTS
         // =========================
-        [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> GetMine(int page = 1, int pageSize = 10)
         {
@@ -156,7 +154,6 @@ namespace DuoCareAPI.Controllers
         // =========================
         // ACCEPT
         // =========================
-        [Authorize]
         [HttpPut("{id}/accept")]
         public async Task<IActionResult> Accept(int id)
         {
@@ -180,7 +177,6 @@ namespace DuoCareAPI.Controllers
         // =========================
         // REJECT
         // =========================
-        [Authorize]
         [HttpPut("{id}/reject")]
         public async Task<IActionResult> Reject(int id)
         {
@@ -207,7 +203,6 @@ namespace DuoCareAPI.Controllers
         // =========================
         // COMPLETE
         // =========================
-        [Authorize]
         [HttpPut("{id}/complete")]
         public async Task<IActionResult> Complete(int id)
         {
